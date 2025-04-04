@@ -41,7 +41,7 @@ function App() {
             Trending TV
           </button>
         </div>
-        <div className='flex-container'>
+        <div class='flex flex-wrap bg-[#032541] justify-center'>
           {movieData.length !== 0 ? (
             <>
               {movieData.map((item) => (
