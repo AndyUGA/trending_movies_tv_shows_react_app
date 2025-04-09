@@ -41,6 +41,7 @@ button:hover {
 }
 
 .movie_name {
+  width: 300px;
   padding-top: 10px;
   font-size: 1.2rem;
   font-weight: bold;
