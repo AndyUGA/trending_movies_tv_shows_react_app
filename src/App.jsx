@@ -3,6 +3,7 @@ import axios from 'axios';
 import './App.css';
 import { Loader2 } from 'lucide-react';
 const apiKey = import.meta.env.VITE_MOVIE_DB_API_KEY;
+import { Tv, Clapperboard } from 'lucide-react';
 
 function App() {
   const [movieData, setMovieData] = useState([]);
@@ -31,14 +32,24 @@ function App() {
               getTrendingMovieData('movie');
             }}
           >
-            Trending Movies
+            <div className='flex items-center justify-evenly'>
+              <div className='mx-[1rem]'>
+                <Clapperboard />
+              </div>
+              <div>Trending Movies</div>
+            </div>
           </button>
           <button
             onClick={() => {
               getTrendingMovieData('tv');
             }}
           >
-            Trending TV
+            <div className='flex items-center justify-evenly'>
+              <div className='mx-[1rem]'>
+                <Tv />
+              </div>
+              <div>Trending TV</div>
+            </div>
           </button>
         </div>
         <div class='flex flex-wrap bg-[#032541] justify-center'>
@@ -46,10 +57,11 @@ function App() {
             <>
               {movieData.map((item) => (
                 <div className='movie_item'>
-                  <div>
+                  <div className='text-center'>
                     <img
+                      className='w-[300px]'
                       alt={'Movie or tv show'}
-                      src={`https://image.tmdb.org/t/p/w300/${item.poster_path}`}
+                      src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
                     />
                     <div className='movie_name'>
                       {item.original_title
