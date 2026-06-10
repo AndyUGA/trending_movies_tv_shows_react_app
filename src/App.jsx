@@ -166,12 +166,12 @@ function App() {
                       />
                     </div>
                   )}
-                  <div className="flex flex-col sm:flex-row">
+                  <div className="flex flex-row">
                     {!trailerKeys[item.id] && (
                       <img
                         src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
                         alt={item.original_title || item.original_name}
-                        className="w-full sm:w-44 object-cover shrink-0"
+                        className="w-28 sm:w-36 object-cover shrink-0"
                       />
                     )}
                     <div className="p-5 flex flex-col gap-3 min-w-0">
