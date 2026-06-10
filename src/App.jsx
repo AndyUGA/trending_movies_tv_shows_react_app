@@ -154,7 +154,7 @@ function App() {
                   </div>
                 </DialogTrigger>
 
-                <DialogContent className={`bg-[#0d1f35] border border-white/10 text-white p-0 overflow-hidden rounded-2xl ${trailerKeys[item.id] ? 'max-w-2xl' : 'max-w-lg'}`}>
+                <DialogContent className={`bg-[#0d1f35] border border-white/10 text-white p-0 overflow-hidden overflow-y-auto max-h-[90dvh] rounded-2xl ${trailerKeys[item.id] ? 'max-w-2xl' : 'max-w-lg'}`}>
                   {trailerKeys[item.id] && (
                     <div className="relative w-full aspect-video">
                       <iframe
