@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import './App.css';
 import { Loader2, Tv, Clapperboard, Star } from 'lucide-react';
@@ -19,18 +19,32 @@ function App() {
   const [trailerKeys, setTrailerKeys] = useState({});
   const [activeTab, setActiveTab] = useState('movie');
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const sentinelRef = useRef(null);
 
-  const getTrendingMovieData = useCallback(async (type) => {
-    setLoading(true);
-    setActiveTab(type);
-    setProviderLogos({});
-    setTrailerKeys({});
+  const fetchTrending = useCallback(async (type, pageNum, append) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+      setActiveTab(type);
+      setProviderLogos({});
+      setTrailerKeys({});
+    }
     try {
       const resp = await axios.get(
-        `https://api.themoviedb.org/3/trending/${type}/day?api_key=${apiKey}`
+        `https://api.themoviedb.org/3/trending/${type}/day?api_key=${apiKey}&page=${pageNum}`
       );
       const results = resp.data.results;
-      setMovieData(results);
+      setMovieData((prev) => {
+        if (!append) return results;
+        const existingIds = new Set(prev.map((item) => item.id));
+        return [...prev, ...results.filter((item) => !existingIds.has(item.id))];
+      });
+      setPage(pageNum);
+      setHasMore(pageNum < resp.data.total_pages);
       results.forEach((item) => {
         getProvider(item.id, type);
         if (type === 'movie') getTrailer(item.id);
@@ -39,12 +53,35 @@ function App() {
       console.error(e);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, []);
+
+  const getTrendingMovieData = useCallback(
+    (type) => fetchTrending(type, 1, false),
+    [fetchTrending]
+  );
 
   useEffect(() => {
     getTrendingMovieData('movie');
   }, [getTrendingMovieData]);
+
+  useEffect(() => {
+    if (!hasMore || loading || loadingMore) return;
+    const node = sentinelRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchTrending(activeTab, page + 1, true);
+        }
+      },
+      { rootMargin: '400px' }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [activeTab, page, hasMore, loading, loadingMore, fetchTrending]);
 
   async function getTrailer(id) {
     try {
@@ -207,6 +244,14 @@ function App() {
                 </DialogContent>
               </Dialog>
             ))}
+          </div>
+        )}
+
+        <div ref={sentinelRef} className="h-1" />
+
+        {loadingMore && (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-[#01b4e4]" />
           </div>
         )}
       </main>
